@@ -6,9 +6,16 @@ public class KorgNanoKontrolController : AbstractMidiController {
 
     public KorgNanoKontrolController(IMidiPortDetails portDetails, List<MediaElement> elements) : base(portDetails) {
         // Map input to actions
-        var mainElement = elements.First(element => element.id=="71");
+        
+        // TODO: Abstract all of this out to some UI system
+        var mainElement = elements.First(element => element.id=="54");
+        var browserElement = elements.First(element => element.id=="90");
         
         InputConfigurations.Add(0, new InputConfiguration(0, InputType.ANALOG, InputActionType.VOLUME, mainElement));
+        InputConfigurations.Add(48, new InputConfiguration(48, InputType.BUTTON, InputActionType.MUTE, mainElement));
+        
+        InputConfigurations.Add(7, new InputConfiguration(7, InputType.ANALOG, InputActionType.VOLUME, browserElement));
+        InputConfigurations.Add(55, new InputConfiguration(55, InputType.BUTTON, InputActionType.MUTE, browserElement));
     }
 
     protected override void EventHandler(object? sender, MidiReceivedEventArgs e) {
@@ -25,10 +32,12 @@ public class KorgNanoKontrolController : AbstractMidiController {
         }
             
         // TODO: Open source midi device mappings to distinguish between "buttons" vs analog "sliders" or "knobs"
-        byte input = midiData[0];
+        int input = midiData[0];
         float value = midiData[1];
         Logger.Info($"Unkown input: Input: {input}, Value: {value}");
-        // InputConfigurations[input]?.Invoke(value);
+        if (InputConfigurations.TryGetValue(input, out var inputConfiguration)) {
+            inputConfiguration.Invoke(value);
+        }
     }
 
 }

@@ -1,6 +1,4 @@
-using XVolume.Abstractions;
 namespace PipeWireMidi.MidiController;
-
 
 public record InputConfiguration(int id, InputType type, InputActionType action, MediaElement media) {
     
@@ -10,7 +8,10 @@ public record InputConfiguration(int id, InputType type, InputActionType action,
                 AudioManager.SetVolume(media.id, value);
                 break;
             case InputActionType.MUTE:
-                AudioManager.SetMute(media.id, ((int)value == AbstractMidiController.MaxAnalogValue));
+                if ((int)value == AbstractMidiController.MaxAnalogValue) {
+                    media.isMuted = !media.isMuted;
+                    AudioManager.SetMute(media.id, media.isMuted);
+                }
                 break;
         }
     }

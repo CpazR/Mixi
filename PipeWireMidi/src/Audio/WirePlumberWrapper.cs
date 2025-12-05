@@ -35,18 +35,38 @@ public class WirePlumberWrapper : IAudioWrapper {
             Environment.NewLine
         ], StringSplitOptions.RemoveEmptyEntries);
 
-
         var currentSection = Section.None;
+        var readingStreams = false;
 
         foreach (var line in lines) {
             // Set the current section based on the line content
             // TODO: Likely not scalable. Don't know how other distro's handle this.
-            if (line.StartsWith(" ├─ Devices:")) currentSection = Section.Devices;
-            else if (line.StartsWith(" ├─ Sinks:")) currentSection = Section.Sinks;
-            else if (line.StartsWith(" ├─ Sources:")) currentSection = Section.Sources;
-            else if (line.StartsWith(" ├─ Filters:")) currentSection = Section.Filters;
-            else if (line.StartsWith(" └─ Streams:")) currentSection = Section.Streams;
+            if (line.StartsWith(" ├─ Devices:")) {
+                currentSection = Section.Devices;
+                continue;
+            }
+            else if (line.StartsWith(" ├─ Sinks:")) {
+                currentSection = Section.Sinks;
+                continue;
+            }
+            else if (line.StartsWith(" ├─ Sources:")) {
+                currentSection = Section.Sources;
+                continue;
+            }
+            else if (line.StartsWith(" ├─ Filters:")) {
+                currentSection = Section.Filters;
+                continue;
+            }
+            else if (line.StartsWith(" └─ Streams:")) {
+                readingStreams = true;
+                currentSection = Section.Streams;
+                continue;
+            }
             else if (line.StartsWith(" ├─") || line.StartsWith(" └─")) continue; // Skip section headers
+            // else if (currentSection.Equals(Section.Streams) && (line.StartsWith("") || line.StartsWith(" "))) {
+            //     readingStreams = false;
+            //     continue;
+            // };
 
             // Parse based on current section
             switch (currentSection) {
@@ -56,22 +76,31 @@ public class WirePlumberWrapper : IAudioWrapper {
                 case Section.Sinks:
                 case Section.Sources:
                 case Section.Filters:
-                case Section.Streams:
                     ParseAudio(elements, line);
+                    break;
+                case Section.Streams:
+                    ParseStreams(elements, line);
                     break;
             }
         }
 
         return elements;
     }
+    private static void ParseStreams(List<MediaElement> elements, string line) {
+        var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2) { // Only ID and name
+            elements.Add(new MediaElement(parts[0].Replace(".", ""), // ID
+                string.Join(" ", parts.Skip(1)), // Name
+                false, // Default muted state
+                1f)); // Default volume
+        }
+    }
 
     private static void ParseDevice(List<MediaElement> elements, string line) {
-        var parts = line.Split([
-            ' '
-        ], StringSplitOptions.RemoveEmptyEntries);
+        var parts = line.Split([' '], StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length >= 3) {
             elements.Add(new MediaElement(parts[1].Replace(".", ""), // ID
-                String.Join(" ", parts.Skip(2)), // Name
+                string.Join(" ", parts.Skip(2)), // Name
                 false, // Default muted state
                 1f)); // Default volume
         }
