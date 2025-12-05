@@ -19,9 +19,11 @@ class PipeWireMidiManager {
    static void Main(string[] args) {
 
         // Instantiate the MIDI input device
-        var midiDeviceNumber = "16_0"; // I think this is the client number from "aconnect -l"?
+        // TODO: Pull this out into a UI
+        var midiDeviceNumber = "28_0"; // I think this is the client number from "aconnect -l"?
 
         var access = MidiAccessManager.Default;
+       
         Logger.Debug(access.Inputs);
         Logger.Debug(access.Outputs);
         

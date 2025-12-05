@@ -1,4 +1,4 @@
-using Fr.Wireplumber;
+using PipeWireMidi.MidiController;
 namespace PipeWireMidi;
 
 /**
@@ -17,7 +17,8 @@ public class AudioManager {
     public static readonly AudioManager Instance = new AudioManager();
 
     public static void SetVolume(string id, float volume) {
-        Instance.audioWrapper.SetVolume(id, volume);
+        var normalizedVolume = ((volume - 0) / AbstractMidiController.MaxAnalogValue) * 100;
+        Instance.audioWrapper.SetVolume(id, normalizedVolume);
     }
 
     public static void SetMute(string id, bool mute) {
