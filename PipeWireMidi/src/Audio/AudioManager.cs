@@ -14,7 +14,7 @@ public class AudioManager {
         audioWrapper = new WirePlumberWrapper();
     }
     
-    public static readonly AudioManager Instance = new AudioManager();
+    public static readonly AudioManager Instance = new();
 
     public static void SetVolume(string id, float volume) {
         var normalizedVolume = ((volume - 0) / AbstractMidiController.MaxAnalogValue) * 100;

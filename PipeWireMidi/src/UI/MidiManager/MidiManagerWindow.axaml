@@ -9,25 +9,17 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        
+        <ComboBox Name="MidiDevices" Grid.Row="0" Margin="20">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"></TextBlock>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
         <Label FontSize="24" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
             Avalonia Tray Icon Sample
         </Label>
-
-        <Label Name="LblActivationMode" Grid.Row="1" FontSize="16" HorizontalContentAlignment="Center"
-               VerticalContentAlignment="Center">
-            Activated by...
-        </Label>
-
-        <ComboBox Grid.Row="1" Margin="20">
-            <ComboBoxItem>Test Item 1</ComboBoxItem>
-            <ComboBoxItem>Test Item 2</ComboBoxItem>
-            <ComboBoxItem>Test Item 3</ComboBoxItem>
-        </ComboBox>
-
-        <Button Name="CmdClose" Click="CmdClose_OnClick" IsCancel="True" Grid.Row="2" Margin="30"
-                HorizontalAlignment="Center">
-            _Close
-        </Button>
     </Grid>
 </Window>
