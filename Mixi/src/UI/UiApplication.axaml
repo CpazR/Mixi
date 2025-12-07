@@ -1,10 +1,10 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:PipeWireMidi.UI"
              xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
-             x:Class="PipeWireMidi.UI.UiApplication"
+             xmlns:ui="clr-namespace:Mixi.UI"
+             x:Class="Mixi.UI.UiApplication"
              x:CompileBindings="true"
-             x:DataType="local:UiApplication"
+             x:DataType="ui:UiApplication"
              RequestedThemeVariant="Default">
     <Application.Styles>
         <themes:MaterialTheme BaseTheme="Inherit" PrimaryColor="Blue" SecondaryColor="Amber"/>
@@ -17,7 +17,6 @@
                 <TrayIcon.Menu>
                     <NativeMenu>
                         <NativeMenuItem Header="_Open" Command="{Binding ShowMidiManagerCommand}" />
-                        <NativeMenuItem Header="_About" Command="{Binding ShowAboutWindowCommand}" />
                         <NativeMenuItemSeparator />
                         <NativeMenuItem Header="E_xit" Command="{Binding ExitApplicationCommand}" />
                     </NativeMenu>

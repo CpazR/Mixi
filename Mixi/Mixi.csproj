@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Mixi</RootNamespace>
+        <LangVersion>latest</LangVersion>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <IncludeAvaloniaGenerators>true</IncludeAvaloniaGenerators>
+        <AssemblyName>Mixi</AssemblyName>
+        <PackageId>Mixi</PackageId>
+        <Authors>Mixi</Authors>
+        <Company>Mixi</Company>
+        <Product>Mixi</Product>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.9"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.9"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.9"/>
+        <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.9"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
+        <PackageReference Include="CSCore" Version="1.2.1.2"/>
+        <PackageReference Include="FrWireplumber" Version="0.4.4"/>
+        <PackageReference Include="managed-midi" Version="1.10.1"/>
+        <PackageReference Include="Material.Avalonia" Version="3.13.3"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0"/>
+        <PackageReference Include="NLog" Version="6.0.6"/>
+        <PackageReference Include="System.Net.Sockets" Version="4.3.0"/>
+        <PackageReference Include="XVolume" Version="0.1.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="src\UI\Resources\slider-hori.ico"/>
+        <AvaloniaResource Include="src\UI\Resources\slider-hori.svg"/>
+        <AvaloniaResource Include="src\UI\Resources\slider-vert.ico"/>
+        <AvaloniaResource Include="src\UI\Resources\slider-vert.svg"/>
+        <None Remove="src\UI\slider-vert.ico"/>
+        <None Remove="src\UI\slider-vert.svg"/>
+        <None Remove="src\UI\slider-hori.svg"/>
+        <None Remove="src\UI\slider-hori.ico"/>
+        <AvaloniaXaml Remove="src\UI\MidiManager\MidiControl\KorgNanoKontrolControlPanel.axaml"/>
+        <AvaloniaXaml Remove="src\UI\MidiManager\MidiControl\MidiInputComboxBox.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="src\UI\About\"/>
+    </ItemGroup>
+</Project>

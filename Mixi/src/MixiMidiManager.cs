@@ -1,12 +1,15 @@
 ﻿using Avalonia;
+using Commons.Music.Midi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Mixi.Audio;
+using Mixi.MidiController;
+using Mixi.UI;
 using NLog;
 using NLog.Targets;
-using PipeWireMidi.UI;
-namespace PipeWireMidi;
+namespace Mixi;
 
-class PipeWireMidiManager {
+class MixiMidiManager {
 
     private static readonly Logger Logger = BuildLogger();
 
@@ -19,20 +22,23 @@ class PipeWireMidiManager {
             .GetCurrentClassLogger();
     }
 
+    private static AbstractMidiController? activeMidiController;
 
     [STAThread]
     static void Main(string[] args) {
-        Logger.Info("Setting up midi service daemon:");
-        var daemonHost = BuildMidiDaemonWorker();
-        daemonHost.RunAsync();
+        // Logger.Info("Setting up midi service daemon:");
+        // var daemonHost = BuildMidiDaemonWorker();
+        // daemonHost.RunAsync();
+
 
         Logger.Info("Standing up Ui");
-        var uiApp = BuildAvaloniaUi();
+        var uiApp = BuildAvaloniaApp();
 
         // TODO: This should block the main thread. But shutdown daemon host on UI shutdown. 
         uiApp.StartWithClassicDesktopLifetime(args);
-        daemonHost.StopAsync();
-        daemonHost.WaitForShutdown();
+        activeMidiController?.Close();
+        // daemonHost.StopAsync();
+        // daemonHost.WaitForShutdown();
     }
 
     private static IHost BuildMidiDaemonWorker() {
@@ -44,9 +50,16 @@ class PipeWireMidiManager {
         return host;
     }
 
-    private static AppBuilder BuildAvaloniaUi() {
+    public static AppBuilder BuildAvaloniaApp() {
         return AppBuilder.Configure<UiApplication>()
             .UsePlatformDetect()
             .LogToTrace();
+    }
+    public static AbstractMidiController GetMidiController(IMidiPortDetails portDetails) {
+        // TODO: May need to use the worker appraoch here. Need to do testing on this this would be managed with the UI piece and managed midi.
+        activeMidiController ??= new KorgNanoKontrolController(portDetails);
+        // TODO: Need to standardize a list of midi device names and confirm consistency across platforms.
+        // This list could be used to map names to controller implementations
+        return activeMidiController;
     }
 }

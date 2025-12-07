@@ -1,10 +1,15 @@
 using Commons.Music.Midi;
 using Microsoft.Extensions.Hosting;
+using Mixi.Audio;
+using Mixi.MidiController;
 using NLog;
 using NLog.Targets;
-namespace PipeWireMidi;
+namespace Mixi;
 
-public class MidiWorker : IHostedService {
+/**
+ * TODO: May be a deprecated approach. UI is more flexible than expected.
+ */
+public class MidiWorker(AbstractMidiController controller) : IHostedService {
 
     private static readonly Logger Logger = BuildLogger();
 
@@ -16,8 +21,6 @@ public class MidiWorker : IHostedService {
             })
             .GetCurrentClassLogger();
     }
-
-    private KorgNanoKontrolController controller;
 
     public Task StartAsync(CancellationToken cancellationToken) {
         // Instantiate the MIDI input device

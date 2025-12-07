@@ -3,9 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.Input;
-using PipeWireMidi.MidiController;
-using PipeWireMidi.UI.MidiManager;
-namespace PipeWireMidi.UI;
+using Mixi.MidiController;
+using Mixi.UI.MidiManager;
+namespace Mixi.UI;
 
 /**
  * The main entry class for avalonia UI
@@ -18,6 +18,8 @@ public partial class UiApplication : Application {
 
     public override void Initialize() {
         AvaloniaXamlLoader.Load(this);
+
+        // TODO: Try loading existing configuration. If not auto show midi manager window for first time setup.
     }
 
     public UiApplication() {

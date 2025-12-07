@@ -1,5 +1,5 @@
 using System.Diagnostics;
-namespace PipeWireMidi;
+namespace Mixi.Audio;
 
 // Enums to track current sections
 enum Section {

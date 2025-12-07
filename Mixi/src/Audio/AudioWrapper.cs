@@ -1,4 +1,4 @@
-namespace PipeWireMidi;
+namespace Mixi.Audio;
 
 /**
  * An interface that abstracts the OS audio layer

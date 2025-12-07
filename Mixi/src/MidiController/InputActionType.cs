@@ -1,4 +1,4 @@
-namespace PipeWireMidi.MidiController;
+namespace Mixi.MidiController;
 
 public enum InputActionType {
     VOLUME,
