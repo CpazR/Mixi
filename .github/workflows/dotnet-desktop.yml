@@ -36,4 +36,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Application
-          path: Mixi/bin/Release/net9.0
+          path: /home/runner/work/Mixi/Mixi/Mixi/bin/Release/net9.0
