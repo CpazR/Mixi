@@ -2,8 +2,6 @@ using Commons.Music.Midi;
 using Mixi.Audio;
 using NLog;
 using NLog.Targets;
-using XVolume.Abstractions;
-using XVolume.Factory;
 namespace Mixi.MidiController;
 
 public abstract class AbstractMidiController {
@@ -33,8 +31,6 @@ public abstract class AbstractMidiController {
      */
     public Dictionary<int, InputDefinition> Definitions { get; protected init; }
 
-    private static readonly IVolumeSubsystem volume = VolumeSubsystemFactory.Create();
-
     public const int MinAnalogValue = 0; // AKA boolean off
 
     public const int MaxAnalogValue = 127; // AKA boolean on
@@ -51,20 +47,6 @@ public abstract class AbstractMidiController {
     protected abstract void EventHandler(object? sender, MidiReceivedEventArgs e);
 
     public abstract void BindElement(int input, MediaElement element);
-
-    protected void SetVolume(float value) {
-        float scaledValue = (value / MaxAnalogValue) * 100;
-        volume.SetVolumeSmooth((int)scaledValue, 100);
-    }
-
-    protected void ToggleMute(int value) {
-        if (value == MaxAnalogValue) {
-            volume.Mute();
-        }
-        else {
-            volume.Unmute();
-        }
-    }
 
     public void Close() {
         input.CloseAsync();
