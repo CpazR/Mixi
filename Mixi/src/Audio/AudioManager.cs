@@ -21,6 +21,11 @@ public class AudioManager {
         Instance.audioWrapper.SetVolume(id, normalizedVolume);
     }
 
+    public static void SetApplicationVolume(string applicationName, float volume) {
+        var normalizedVolume = ((volume - 0) / AbstractMidiController.MaxAnalogValue) * 100;
+        Instance.audioWrapper.SetApplicationVolume(applicationName, normalizedVolume);
+    }
+
     public static void SetMute(string id, bool mute) {
         Instance.audioWrapper.SetMute(id, mute);
     }
