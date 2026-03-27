@@ -1,7 +1,10 @@
 using DynamicData.Kernel;
 using Fr.Wireplumber;
 using Fr.Wireplumber.Model.Objects;
+using Microsoft.VisualBasic;
 using Mixi.Audio.Utils;
+using NLog;
+using NLog.Targets;
 namespace Mixi.Audio;
 
 /**
@@ -10,6 +13,17 @@ namespace Mixi.Audio;
  * Inspired by XVolume's many generic interfaces for linux.
  */
 public class WirePlumberWrapper : IAudioWrapper {
+
+    private static readonly Logger Logger = BuildLogger();
+
+    private static Logger BuildLogger() {
+        // TODO: Figure out why config file isn't recognized here 
+        return new LogFactory().Setup().LoadConfiguration(builder => {
+                var logconsole = new ConsoleTarget("logconsole");
+                builder.Configuration.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            })
+            .GetCurrentClassLogger();
+    }
 
     private static readonly string VolumeToken = "[vol:";
 
@@ -161,7 +175,7 @@ public class WirePlumberWrapper : IAudioWrapper {
 
 
     public void SetVolume(string id, float volume) {
-        var command = $"wpctl set-volume {id} {volume}%";
+        var command = buildSetVolumeCommand(id, volume, false);
         ShellUtils.ExecuteCommand(command);
         Console.WriteLine($"Set volume of {id} to {volume}%");
     }
@@ -181,8 +195,34 @@ public class WirePlumberWrapper : IAudioWrapper {
 
         var nodeId = node.Value.ObjectId;
         // Based on results, update the volume
-        var volumeCommand = $"wpctl set-volume {nodeId} {volume}%";
+        var volumeCommand = buildSetVolumeCommand(applicationName, volume, false);
         ShellUtils.ExecuteCommand(volumeCommand);
+    }
+
+    public void SetPidApplicationVolume(string pid, float volume) {
+        // Based on results, update the volume
+        var volumeCommand = buildSetVolumeCommand(pid, volume, true);
+        var childPidsCommand = $"pgrep -P {pid}";
+
+        var childPids = ShellUtils.ExecuteCommand(childPidsCommand);
+
+        if (!string.IsNullOrEmpty(childPids)) {
+            // TODO: Hacky workaround for the fact some application handle audio processing using subprocesses.
+            var hasChildPid = false;
+            foreach (var childPid in childPids.Split('\n', StringSplitOptions.RemoveEmptyEntries)) {
+                var childPidVolumeCommand = buildSetVolumeCommand(childPid, volume, true);
+                ShellUtils.ExecuteCommand(childPidVolumeCommand);
+                hasChildPid = true;
+            }
+
+            if (!hasChildPid) {
+                ShellUtils.ExecuteCommand(volumeCommand);
+            }
+        }
+        else {
+            ShellUtils.ExecuteCommand(volumeCommand);
+        }
+
     }
 
     public void SetMute(string id, bool mute) {
@@ -190,6 +230,10 @@ public class WirePlumberWrapper : IAudioWrapper {
         var command = $"wpctl set-mute {id} {isMuteExpression}";
         ShellUtils.ExecuteCommand(command);
         Console.WriteLine(mute ? $"Muted {id}" : $"Unmuted {id}");
+    }
+
+    private string buildSetVolumeCommand(string id, float volume, bool usePid) {
+        return $"wpctl set-volume {(usePid ? "--pid" : "")} {id} {volume}%";
     }
 
 }

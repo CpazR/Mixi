@@ -17,7 +17,7 @@ public record InputConfiguration(int Id, InputDefinition Definition, MediaElemen
                     switch (mediaIntId) {
                         case FOCUSED_APPLICATION_INDEX:
                             var focusedApplication = FocusedApplicationDetector.GetFocusedApplicationName();
-                            AudioManager.SetApplicationVolume(focusedApplication, value);
+                            AudioManager.SetPidApplicationVolume(focusedApplication, value);
                             break;
                     }
                 }

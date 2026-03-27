@@ -33,7 +33,7 @@
         <PackageReference Include="ReactiveUI.Avalonia" Version="11.3.8"/>
         <PackageReference Include="System.Net.Sockets" Version="4.3.0"/>
         <PackageReference Include="X11.Net" Version="1.0.7" />
-        <PackageReference Include="XVolume" Version="0.1.1"/>
+        <PackageReference Include="XVolume" Version="0.1.1" />
     </ItemGroup>
 
     <ItemGroup>

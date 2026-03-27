@@ -33,7 +33,7 @@ public class FocusedApplicationDetector {
     private static string GetLinuxFocusedApp() {
         // Implement using X11 or Wayland APIs
         // Requires additional libraries like X11.NET
-        var details = LinuxFocusedApplicationDetector.GetFocusedApplicationName();
+        var details = LinuxFocusedApplicationDetector.GetFocusedApplication();
         Console.WriteLine(details);
         return details;
     }

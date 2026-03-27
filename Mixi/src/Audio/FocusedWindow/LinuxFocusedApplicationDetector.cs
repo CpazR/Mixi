@@ -1,5 +1,4 @@
 using Mixi.Audio.Utils;
-using System.Text.RegularExpressions;
 namespace Mixi.Audio.FocusedWindow;
 
 /**
@@ -7,14 +6,12 @@ namespace Mixi.Audio.FocusedWindow;
  */
 class LinuxFocusedApplicationDetector {
 
-    public static string? GetFocusedApplicationName() {
+    public static string? GetFocusedApplication() {
         var getWmClassCommand = "xdotool getwindowfocus";
+        var getPidCommand = "xdotool getwindowpid";
         var winId = long.Parse(ShellUtils.ExecuteCommand(getWmClassCommand) ?? string.Empty);
+        var pid = ShellUtils.ExecuteCommand($"{getPidCommand} {winId}")?.Replace("\n", "") ?? string.Empty;
 
-        var re = new Regex("\"(.*?)\"");
-
-        var getClassNameCommand = $"xprop WM_CLASS -id 0x{winId:X}";
-        var match = re.Match(ShellUtils.ExecuteCommand(getClassNameCommand) ?? string.Empty);
-        return match.Value;
+        return pid;
     }
 }
