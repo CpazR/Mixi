@@ -6,6 +6,10 @@ namespace Mixi.Audio;
 public interface IAudioWrapper {
 
     public void SetVolume(string id, float volume);
+    
+    public void SetApplicationVolume(string applicationName, float volume);
 
     public void SetMute(string id, bool mute);
+
+    public void SetPidApplicationVolume(string pid, float volume);
 }

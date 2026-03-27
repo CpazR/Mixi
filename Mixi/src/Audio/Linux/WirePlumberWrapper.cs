@@ -1,5 +1,10 @@
 using DynamicData.Kernel;
-using System.Diagnostics;
+using Fr.Wireplumber;
+using Fr.Wireplumber.Model.Objects;
+using Microsoft.VisualBasic;
+using Mixi.Audio.Utils;
+using NLog;
+using NLog.Targets;
 namespace Mixi.Audio;
 
 /**
@@ -9,14 +14,58 @@ namespace Mixi.Audio;
  */
 public class WirePlumberWrapper : IAudioWrapper {
 
+    private static readonly Logger Logger = BuildLogger();
+
+    private static Logger BuildLogger() {
+        // TODO: Figure out why config file isn't recognized here 
+        return new LogFactory().Setup().LoadConfiguration(builder => {
+                var logconsole = new ConsoleTarget("logconsole");
+                builder.Configuration.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            })
+            .GetCurrentClassLogger();
+    }
+
     private static readonly string VolumeToken = "[vol:";
 
     private const string CommandStatus = "wpctl status";
 
+    private Dictionary<ulong, MediaElement> mediaMappings = new();
+
+    private List<Node> nodeList = [];
+
+    private List<Client> clientList = [];
+
+    public WirePlumberWrapper() {
+        Wireplumber.Start();
+
+        // Load media elements from node registry events. These IDs can be used to access the Nodes directly if needed later.
+        Wireplumber.NodeRegistry.Added += node => {
+            nodeList.Add(node);
+            mediaMappings[node.ObjectId] = new MediaElement($"{node.ObjectId}", node.Name, false, 1f, MediaType.NA);
+        };
+
+        Wireplumber.NodeRegistry.Updated += (node, type) => {
+            mediaMappings[node.ObjectId] = new MediaElement($"{node.ObjectId}", node.Name, false, 1f, MediaType.NA);
+        };
+
+        Wireplumber.NodeRegistry.Deleted += node => {
+            nodeList.Remove(node);
+            mediaMappings.Remove(node.ObjectId);
+        };
+
+        Wireplumber.ClientRegistry.Added += client => {
+            clientList.Add(client);
+        };
+
+        Wireplumber.ClientRegistry.Deleted += client => {
+            clientList.Remove(client);
+        };
+    }
+
     public static List<MediaElement> GetMediaElements() {
 
         // Execute the command to get the status of sinks, sources and devices
-        var output = ExecuteShellCommand(CommandStatus);
+        var output = ShellUtils.ExecuteCommand(CommandStatus);
 
         var elements = ParseAudioElements(output);
         return elements;
@@ -126,28 +175,65 @@ public class WirePlumberWrapper : IAudioWrapper {
 
 
     public void SetVolume(string id, float volume) {
-        var command = $"wpctl set-volume {id} {volume}%";
-        ExecuteShellCommand(command);
+        var command = buildSetVolumeCommand(id, volume, false);
+        ShellUtils.ExecuteCommand(command);
         Console.WriteLine($"Set volume of {id} to {volume}%");
+    }
+
+    public void SetApplicationVolume(string applicationName, float volume) {
+        // Get the ID of the application's pipewire input
+
+        var client = clientList.FirstOrOptional(clientNode => clientNode.Application.Name != null && clientNode.Application.Name.Equals(applicationName));
+        if (!client.HasValue) {
+            return;
+        }
+
+        var node = nodeList.FirstOrOptional(node => node.Client.Id == client.Value.ObjectId);
+        if (!node.HasValue) {
+            return;
+        }
+
+        var nodeId = node.Value.ObjectId;
+        // Based on results, update the volume
+        var volumeCommand = buildSetVolumeCommand(applicationName, volume, false);
+        ShellUtils.ExecuteCommand(volumeCommand);
+    }
+
+    public void SetPidApplicationVolume(string pid, float volume) {
+        // Based on results, update the volume
+        var volumeCommand = buildSetVolumeCommand(pid, volume, true);
+        var childPidsCommand = $"pgrep -P {pid}";
+
+        var childPids = ShellUtils.ExecuteCommand(childPidsCommand);
+
+        if (!string.IsNullOrEmpty(childPids)) {
+            // TODO: Hacky workaround for the fact some application handle audio processing using subprocesses.
+            var hasChildPid = false;
+            foreach (var childPid in childPids.Split('\n', StringSplitOptions.RemoveEmptyEntries)) {
+                var childPidVolumeCommand = buildSetVolumeCommand(childPid, volume, true);
+                ShellUtils.ExecuteCommand(childPidVolumeCommand);
+                hasChildPid = true;
+            }
+
+            if (!hasChildPid) {
+                ShellUtils.ExecuteCommand(volumeCommand);
+            }
+        }
+        else {
+            ShellUtils.ExecuteCommand(volumeCommand);
+        }
+
     }
 
     public void SetMute(string id, bool mute) {
         var isMuteExpression = mute ? "1" : "0";
         var command = $"wpctl set-mute {id} {isMuteExpression}";
-        ExecuteShellCommand(command);
+        ShellUtils.ExecuteCommand(command);
         Console.WriteLine(mute ? $"Muted {id}" : $"Unmuted {id}");
     }
 
-    private static string ExecuteShellCommand(string command) {
-        var processInfo = new ProcessStartInfo("bash", "-c \"" + command + "\"") {
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-
-        var process = Process.Start(processInfo);
-        var reader = process.StandardOutput;
-        return reader.ReadToEnd();
+    private string buildSetVolumeCommand(string id, float volume, bool usePid) {
+        return $"wpctl set-volume {(usePid ? "--pid" : "")} {id} {volume}%";
     }
 
 }

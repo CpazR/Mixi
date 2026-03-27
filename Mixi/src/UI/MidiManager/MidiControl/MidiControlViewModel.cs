@@ -13,6 +13,17 @@ public class MidiControlViewModel : ReactiveObject, IActivatableViewModel {
 
     private IList<ComboBoxInput> _comboBoxInputs = new List<ComboBoxInput>();
 
+    /**
+     * When selected, "unbind" the current input
+     */
+    private static readonly MediaElement empty = new MediaElement("", "", false, 0, MediaType.None);
+
+    /**
+     * When selected, bind input to the "focused application"
+     */
+    private static readonly MediaElement focusedApplication =
+        new MediaElement($"{InputConfiguration.FOCUSED_APPLICATION_INDEX}", "Focused Application", false, 0, MediaType.Streams);
+
     public IList<ComboBoxInput> ComboBoxInputs
     {
         get => _comboBoxInputs;
@@ -24,8 +35,10 @@ public class MidiControlViewModel : ReactiveObject, IActivatableViewModel {
     public MidiControlViewModel(Dictionary<int, InputDefinition> definitions, List<MediaElement> mediaElements) {
 
         this.WhenActivated(disposables => {
-            // Initial empty element
-            mediaElements.Insert(0, new MediaElement("", "", false, 0, MediaType.None));
+            // Initial default elements
+            mediaElements.Insert(0, empty);
+            mediaElements.Insert(1, focusedApplication);
+
             var inputs = definitions.Select(keyValuePair => keyValuePair.Key)
                 .Select(inputNumber => new ComboBoxInput(inputNumber, definitions[inputNumber].Type, mediaElements))
                 .ToList();
