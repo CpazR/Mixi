@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Mixi.Audio;
 using Mixi.MidiController;
@@ -19,6 +21,13 @@ public partial class KorgNanoKontrolControl : MidiControl {
         AvaloniaXamlLoader.Load(this);
 
         DataContext = new MidiControlViewModel(midiController.Definitions, elements);
+    }
+
+    private void OpenOptionsPopup(object sender, RoutedEventArgs e) {
+        var button = sender as Button;
+        var popup = this.FindControl<Popup>("OptionsPopup");
+        popup.PlacementTarget = button;
+        popup.IsOpen = true;
     }
 
     private void SelectedMedia(object? sender, SelectionChangedEventArgs e) {
