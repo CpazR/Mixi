@@ -20,7 +20,7 @@
                             SelectedItem="{Binding SelectedMediaElement, Mode=TwoWay}"
                             midiControl:MidiInputComboBoxHelper.MidiInputId="{Binding InputNumber}">
                             <ComboBox.PlaceholderText>
-                                <MultiBinding StringFormat="'{0} - {1}'">
+                                <MultiBinding StringFormat="\{0\} - \{1\}">
                                     <Binding Path="InputNumber" />
                                     <Binding Path="InputType" />
                                 </MultiBinding>

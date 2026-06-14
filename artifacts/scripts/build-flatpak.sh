@@ -1,8 +1,4 @@
-dotnet tool install --global DotnetPackaging.Tool
-
-dotnetpackager flatpak layout \
- --directory ../../Mixi/bin/Release/net10.0/ \
- --output-dir ../../artifacts/
+python flatpak-dotnet-generator.py mixi-sources.json ../../Mixi/Mixi.csproj
 
 dotnetpackager flatpak bundle \
  --directory ../../Mixi/bin/Release/net10.0/ \
