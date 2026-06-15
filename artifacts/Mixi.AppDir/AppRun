@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# FOR BAZZITE ONLY: Hook into the homebrew libasound installation in the application context
+# This appimage implementation is very POC and not realistic at scale. A flatpak would be more ideal here and just bundle libsoundio with it.
+
+# Check if Homebrew is installed
+if command -v brew &> /dev/null; then
+    # Check if libsoundio is installed
+    if ! brew list libsoundio &> /dev/null; then
+        echo "libsoundio not found. Installing via Homebrew..."
+        brew install libsoundio
+    else
+        echo "libsoundio is already installed"
+    fi
+    export LD_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/lib/:$LD_LIBRARY_PATH
+else
+    echo "Homebrew is not installed. Cannot install libsoundio."
+fi
+
+exec "$APPDIR/usr/bin/Mixi" "$@"
