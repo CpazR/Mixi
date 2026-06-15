@@ -9,17 +9,36 @@ build-options:
   append-ld-library-path: "/usr/lib/sdk/dotnet10/lib"
   prepend-pkg-config-path: "/usr/lib/sdk/dotnet10/lib/pkgconfig"
 
-command: mixi
-
+command: Mixi
 
 finish-args:
+  # TODO: Replace this with wayland and fallback-x11 once Wayland support
+  #       becomes available:
+  #       https://github.com/AvaloniaUI/Avalonia/pull/8003
   - --device=dri
-  - --socket=wayland
-  - --socket=fallback-x11
+  - --device=all
+  - --socket=x11
+  - --socket=pulseaudio
   - --share=ipc
   - --env=DOTNET_ROOT=/app/lib/dotnet
+  - --env=LD_LIBRARY_PATH=/app/lib:$LD_LIBRARY_PATH
 
 modules:
+  - name: libsoundio
+    buildsystem: cmake
+    sources:
+      - type: git
+        url: https://github.com/andrewrk/libsoundio.git
+        tag: '2.0.1-7'  # or whatever version you need
+    build-options:
+      env:
+        CMAKE_POLICY_VERSION_MINIMUM: '3.5'
+    post-install:
+      - |
+        install -Dm644 /dev/null \
+          ${FLATPAK_DEST}/share/doc/libsoundio/LICENSE
+        ls
+
   - name: dotnet
     buildsystem: simple
     build-commands:
@@ -33,7 +52,8 @@ modules:
         url: https://github.com/cpazzra/Mixi.git
       - './mixi-sources.json'
     build-commands:
-      - ls
-      - 'dotnet build -f netcoreapp2.1 -c Release --source nuget-sources Mixi/Mixi.csproj'
+      - 'dotnet build -f net10.0 -c Release --source nuget-sources Mixi/Mixi.csproj'
       - mkdir -p ${FLATPAK_DEST}/bin
-      - cp -r bin/Release/net10.0/publish/* ${FLATPAK_DEST}/bin
+      - cp -r Mixi/bin/Release/net10.0/** ${FLATPAK_DEST}/bin
+      - 'ls -la ${FLATPAK_DEST}/bin'  # Verify it was copied
+      - ls -la /app/lib
