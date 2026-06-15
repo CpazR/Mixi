@@ -1,0 +1,38 @@
+id: cpaz.flatpak.Mixi
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.dotnet10
+build-options:
+  prepend-path: "/usr/lib/sdk/dotnet10/bin"
+  append-ld-library-path: "/usr/lib/sdk/dotnet10/lib"
+  prepend-pkg-config-path: "/usr/lib/sdk/dotnet10/lib/pkgconfig"
+
+command: mixi
+
+
+finish-args:
+  - --device=dri
+  # TODO: Replace this with wayland and fallback-x11 once Wayland support
+  #       becomes available:
+  #       https://github.com/AvaloniaUI/Avalonia/pull/8003
+  - --socket=x11
+  - --share=ipc
+  - --env=DOTNET_ROOT=/app/lib/dotnet
+
+modules:
+  - name: dotnet
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/dotnet10/bin/install.sh
+
+  - name: mixi
+    buildsystem: simple
+    sources:
+      - '../scripts/mixi-sources.json'
+    build-commands:
+      - 'ls'
+      - 'dotnet build -f netcoreapp2.1 -c Release --source nuget-sources Mixi/Mixi.csproj'
+      - mkdir -p ${FLATPAK_DEST}/bin
+      - cp -r bin/Release/net10.0/publish/* ${FLATPAK_DEST}/bin

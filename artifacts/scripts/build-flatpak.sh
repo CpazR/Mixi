@@ -1,8 +1,4 @@
-python flatpak-dotnet-generator.py mixi-sources.json ../../Mixi/Mixi.csproj
+#!/bin/sh
 
-dotnetpackager flatpak bundle \
- --directory ../../Mixi/bin/Release/net10.0/ \
- --output ../../artifacts/Mixi.flatpak \
- --system \
- --application-name "Mixi" \
- --summary "Mixi - Midi Volume Manager"
+python3 flatpak-dotnet-generator.py mixi-sources.json ../../Mixi/Mixi.csproj --runtime linux-x64 --dotnet-args --no-cache --verbosity detailed
+flatpak-builder --force-clean --user --install-deps-from=flathub --repo=repo --install builddir ../flatpak/cpaz.flatpak.Mixi.yml

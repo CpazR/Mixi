@@ -218,6 +218,13 @@
     },
     {
         "type": "file",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.app.runtime.linux-x64/10.0.8/microsoft.aspnetcore.app.runtime.linux-x64.10.0.8.nupkg",
+        "sha512": "a781e31a112160fdc0ec19b861661459baccb19209c2be4cce9acd911898b36de7308dc054da164a4bcf03a1db54572360b1d135c7d54f590fc1fad0c9ef01bc",
+        "dest": "nuget-sources",
+        "dest-filename": "microsoft.aspnetcore.app.runtime.linux-x64.10.0.8.nupkg"
+    },
+    {
+        "type": "file",
         "url": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.configuration/10.0.1/microsoft.extensions.configuration.10.0.1.nupkg",
         "sha512": "e579da76c1f8d952ace93295b999390ecdd5a07f97424c56ee0f072c909683a048dc92d57bd984b3b46140973eae7f7664a1931ede3dc1607720aca59adb47c9",
         "dest": "nuget-sources",
@@ -474,6 +481,13 @@
         "sha512": "3452f6420712546622971f6a51e1ac676eba410a1a3414f26628d3ea018cba6a727128f2fbf566574b5e2baaca30321187b23827e76f2e7107827da0b3ccbaf4",
         "dest": "nuget-sources",
         "dest-filename": "microsoft.extensions.primitives.10.0.1.nupkg"
+    },
+    {
+        "type": "file",
+        "url": "https://api.nuget.org/v3-flatcontainer/microsoft.netcore.app.runtime.linux-x64/10.0.8/microsoft.netcore.app.runtime.linux-x64.10.0.8.nupkg",
+        "sha512": "0c06ed751c8c0a4bb91fcb0ed2b57b171f8ae3d2d7ce592675c9a2e56703fed6b39e5f4e11c1ca2f2d795972404246f1e7b89b6c9df903c0fcd34b0e021beac1",
+        "dest": "nuget-sources",
+        "dest-filename": "microsoft.netcore.app.runtime.linux-x64.10.0.8.nupkg"
     },
     {
         "type": "file",
